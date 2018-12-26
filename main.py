@@ -51,7 +51,7 @@ def mqttpub(tem,hum):
   time = ntptime.time() + 946684800 # + (datetime.date(2000,1,1) - datetime.date(1970, 1, 1)).days * 24 * 60 * 60
   msg = {
           "id": "id{}".format(time),
-          "time": time,
+          "expire": time + 48 * 60 * 60,
           "d1": "{}".format(tem),
           "d2": "{}".format(hum)
         }
