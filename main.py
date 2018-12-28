@@ -48,7 +48,7 @@ def do_connect(ssid, password):
 def mqttpub(tem,hum):
   a=usocket.getaddrinfo(mqtt_endpoint,8883)
   addr = a[0][-1][0]
-  time = ntptime.time() + 946684800 # + (datetime.date(2000,1,1) - datetime.date(1970, 1, 1)).days * 24 * 60 * 60
+  time = ntptime.time() + 946684800
   msg = {
           "id": "id{}".format(time),
           "expire": time + 48 * 60 * 60,
@@ -67,14 +67,14 @@ def mqttpub(tem,hum):
       res = client.publish(topic=mqtt_topic, msg=msg, qos=0)
       print('Sending: ' + msg)
       print(str(res))
+      client.disconnect()
       loop = 0
     except Exception as e:
       print('Could not establish MQTT connection')
       print (str(e))
       time.sleep(1)
       loop -= 1
-    
-    
+      
 def send_am(tem,hum):
     am = ambient.Ambient(channel_id, write_key)
     res = am.send({
@@ -102,24 +102,12 @@ def main(d):
   hum = d.humidity()
   mqttpub(tem,hum)
   send_am(tem,hum)
-  
+
+def do_sleep():  
   print ("start sleep")
-  #machine.deepsleep(1000 * 1000 * 600)
-  #esp.deepsleep(1000 * 1000 * 600)
+  machine.deepsleep(60000*5)
 
 do_connect(ssid, password)
 d = dht.DHT22(machine.Pin(4))
 main(d)
-
-
-
-
-
-
-
-
-
-
-
-
-
+do_sleep()
